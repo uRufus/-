@@ -2,21 +2,23 @@
 
 -- Задание 1 В базе данных shop и sample присутствуют одни и те же таблицы, учебной базы данных. 
 -- Переместите запись id = 1 из таблицы shop.users в таблицу sample.users. Используйте транзакции.
+start transaction;
 insert into sample.users (name, birthday_at)
 	select name, birthday_at from shop.users where users.id = 1;
-	
+delete from shop.users where users.id = 1;
+commit;
 -- Задание 2 Создайте представление, которое выводит название name товарной позиции из таблицы 
 -- products и соответствующее название каталога name из таблицы catalogs.
 -- Вариант c join
-drop view if exists cat;
-create view cat as 
+drop view if exists catalog_product_names;
+create view catalog_product_names as 
 	select p.name as product, c.name as `catalog`
 	from products as p 
 		left join catalogs as c 
 			on p.catalog_id = c.id;
 
 -- Вариант без join
-alter view cat as 
+alter view catalog_product_names as 
 	select products.name as product, catalogs.name as `catalog` 
 	from products, catalogs 
 	where products.catalog_id = catalogs.id;
@@ -113,7 +115,7 @@ grant select on shop.username to 'shop_read'@'localhost';
 drop function if exists hello;
 delimiter //
 create function hello()
-returns char(50) deterministic
+returns char(50) no sql
 begin
  set @x = current_time();
  	    if @x between '06:00:00' and '11:59:59' then return 'Доброе утро';
@@ -138,17 +140,18 @@ delimiter //
 create trigger check_products_on_update before update on products
 for each row
 begin
-	if new.name is null or new.description is null then SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'update canceled';
-	elseif (old.name <=> new.name and new.name is null) 
-			or (old.description <=> new.description and new.description is null)
-				then SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'update canceled';
+	if new.name is null and new.description is null then SIGNAL SQLSTATE '45000' 
+		SET MESSAGE_TEXT = 'You not allowed to update rows with null query in name 
+			and description. Update canceled.';
 	end if;
 end; //
 
 create trigger check_products_on_insert before insert on products
 for each row
 begin
-	if new.name is null and new.description is null then SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'insert canceled';
+	if new.name is null and new.description is null then SIGNAL SQLSTATE '45000' 
+		SET MESSAGE_TEXT = 'You not allowed to insert row with null query 
+			in name and description. Insert canceled';
 	end if;
 end; //
 delimiter ;
