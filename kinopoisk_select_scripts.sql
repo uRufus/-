@@ -14,18 +14,23 @@ FROM
 
 	
 -- Количество фильмов и актеров по странам
-SELECT DISTINCT
+SELECT
+	DISTINCT c.id,
 	c.name,
-	COUNT(mc.country_id) OVER w_movies_countries AS 'Количество фильмов',
-	(SELECT count(personas.id) FROM personas LEFT JOIN cities ON personas.city_id = cities.id 
-											 LEFT JOIN countries ON countries.id = cities.country_id 
-													WHERE c.id = countries.id) AS 'Количество персон'
+	COUNT(c.id ) OVER w_movies_countries AS  'Количество фильмов',
+	COUNT(p.id) OVER w_personas AS  'Количество персон'
 FROM 
 	countries AS c
 	LEFT JOIN movies_countries AS mc
 		ON c.id = mc.country_id
-		WINDOW w_movies_countries AS (PARTITION BY c.id);
-
+	    LEFT JOIN cities AS ci
+		 	ON ci.country_id = c.id
+		 	LEFT JOIN personas AS p
+		 		ON p.city_id =ci.id
+		 		GROUP BY mc.id, p.id
+		 		WINDOW w_movies_countries AS (PARTITION BY c.id, p.id),
+		 			   w_personas AS (PARTITION BY c.id, mc.id);
+		 			  
 -- Количество фильмов по годам
 SELECT movie_year, COUNT(id) AS quantity FROM movies GROUP BY movie_year ORDER BY movie_year DESC;
 

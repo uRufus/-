@@ -60,18 +60,29 @@ CREATE TABLE box_offices (
 	genre_id INT UNSIGNED NOT NULL COMMENT "Идентификатор жанра",
 	created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Время создания строки" 
 	) COMMENT "Жанры кинокартин";
+ 
 
 -- Таблица медиафайлов
  CREATE TABLE media ( 
  	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
-	target_id INT UNSIGNED NOT NULL COMMENT "Идентификатор связи",
-	target_type ENUM("Кинокартины", "Персоны") NOT NULL COMMENT "Тип связи",
-	filename VARCHAR(255) NOT NULL COMMENT "Путь к файлу",
-	SIZE INT NOT NULL COMMENT "Размер файла",
+	file_name VARCHAR(255) NOT NULL COMMENT "Путь к файлу",
+	file_size INT NOT NULL COMMENT "Размер файла",
 	media_type ENUM("Видео", "Аудио", "Изображение") NOT NULL COMMENT "Тип медиафайла",
 	created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Время создания строки",
 	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE
 		CURRENT_TIMESTAMP COMMENT "Время обновления строки" ) COMMENT "Медиафайлы";
+
+-- Таблица связи медиафайлов и кинокартин
+CREATE TABLE media_movies (
+	media_id INT UNSIGNED NOT NULL COMMENT "Идентификатор медиафайла",
+	movie_id INT UNSIGNED NOT NULL COMMENT "Идентификатор кинокартины"
+) COMMENT "Связь медиафайла и кинокартины";
+
+-- Таблица связи медиафайлов и персон
+CREATE TABLE media_personas (
+	media_id INT UNSIGNED NOT NULL COMMENT "Идентификатор медиафайла",
+	persona_id INT UNSIGNED NOT NULL COMMENT "Идентификатор персоны"
+) COMMENT "Связь медиафайла и персоны";
 
 -- Таблица типов персон
  CREATE TABLE persona_types ( 
@@ -118,10 +129,19 @@ CREATE TABLE box_offices (
 -- Таблица фактов "Знаете ли вы что.." относиться к кинокартинам и персонам
 CREATE TABLE facts (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
-	target_id INT UNSIGNED NOT NULL COMMENT "Идентификатор связи",
-	target_type ENUM("Кинокартина", "Персона") NOT NULL COMMENT "Тип связи"
 	fact TEXT NOT NULL COMMENT "Факт"
 ) COMMENT "Факты о..";
 
+-- Таблица связи фактов и кинокартин
+CREATE TABLE facts_movies (
+	fact_id INT UNSIGNED NOT NULL COMMENT "Идентификатор факта",
+	movie_id INT UNSIGNED NOT NULL COMMENT "Идентификатор кинокартины"
+) COMMENT "Связь кинокартины и факта";
+
+-- Таблица связи фактов и персон
+CREATE TABLE facts_personas (
+	fact_id INT UNSIGNED NOT NULL COMMENT "Идентификатор факта",
+	persona_id INT UNSIGNED NOT NULL COMMENT "Идентификатор персоны"
+) COMMENT "Связь персоны и факта";
 
 

@@ -73,6 +73,43 @@ ALTER TABLE release_dates
 		FOREIGN KEY (country_id) REFERENCES countries(id);
 
 
+DESC facts_movies;
+
+ALTER TABLE facts_movies
+	ADD CONSTRAINT facts_movies_facts_id_fk
+		FOREIGN KEY (fact_id) REFERENCES facts(id);
+		
+ALTER TABLE facts_movies
+	ADD CONSTRAINT facts_movies_movies_id_fk
+		FOREIGN KEY (movie_id) REFERENCES movies(id);
+
+DESC facts_personas;
+
+ALTER TABLE facts_personas
+	ADD CONSTRAINT facts_personas_facts_id_fk
+		FOREIGN KEY (fact_id) REFERENCES facts(id);
+		
+ALTER TABLE facts_personas
+	ADD CONSTRAINT facts_personas_personas_id_fk
+		FOREIGN KEY (persona_id) REFERENCES personas(id);
+
+DESC media_movies;
+
+ALTER TABLE media_movies
+	ADD CONSTRAINT media_movies_media_id_fk
+		FOREIGN KEY (media_id) REFERENCES media(id);
+
+ALTER TABLE media_movies
+	ADD CONSTRAINT media_movies_movies_id_fk
+		FOREIGN KEY (movie_id) REFERENCES movies(id);
 
 
-	
+DESC media_personas;
+
+ALTER TABLE media_personas
+	ADD CONSTRAINT media_personas_media_id_fk
+		FOREIGN KEY (media_id) REFERENCES media(id);
+
+ALTER TABLE media_personas
+	ADD CONSTRAINT media_personas_personas_id_fk
+		FOREIGN KEY (persona_id) REFERENCES personas(id);
